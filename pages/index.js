@@ -1,36 +1,7 @@
 import { Box, Button, Image, Text, TextField } from '@skynexui/components'
+import { useRouter } from 'next/router'
+import React from 'react'
 import appConfig from '../config.json'
-
-function GlobalStyle() {
-  return (
-    <style global jsx>{`
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        list-style: none;
-      }
-      body {
-        font-family: 'Open Sans', sans-serif;
-      }
-      /* App fit Height */
-      html,
-      body,
-      #__next {
-        min-height: 100vh;
-        display: flex;
-        flex: 1;
-      }
-      #__next {
-        flex: 1;
-      }
-      #__next > * {
-        flex: 1;
-      }
-      /* ./App fit Height */
-    `}</style>
-  )
-}
 
 function Title(props) {
   const Tag = props.tag || 'h1'
@@ -49,19 +20,20 @@ function Title(props) {
 }
 
 export default function PaginaInicial() {
-  const username = 'WendresLucas'
+  //const username = 'WendresLucas'
+  const [username, setUsername] = React.useState('WendresLucas')
+  const roteamento = useRouter()
 
   return (
     <>
-      <GlobalStyle />
       <Box
         styleSheet={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: appConfig.theme.colors.primary[500],
+          backgroundColor: appConfig.theme.colors.primary['050'],
           backgroundImage:
-            'url(https://virtualbackgrounds.site/wp-content/uploads/2020/08/the-matrix-digital-rain.jpg)',
+            'url(https://images.unsplash.com/photo-1589519160732-57fc498494f8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80.site/wp-content/uploads/2020/08/the-matrix-digital-rain.jpg)',
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           backgroundBlendMode: 'multiply'
@@ -82,12 +54,17 @@ export default function PaginaInicial() {
             padding: '32px',
             margin: '16px',
             boxShadow: '0 2px 10px 0 rgb(0 0 0 / 20%)',
-            backgroundColor: appConfig.theme.colors.neutrals[700]
+            backgroundColor: appConfig.theme.colors.neutrals[999]
           }}
         >
           {/* Formulário */}
           <Box
             as="form"
+            onSubmit={function (evento) {
+              evento.preventDefault()
+              console.log('Submit')
+              roteamento.push('/chat')
+            }}
             styleSheet={{
               display: 'flex',
               flexDirection: 'column',
@@ -98,7 +75,7 @@ export default function PaginaInicial() {
               marginBottom: '32px'
             }}
           >
-            <Title tag="h2">Boas vindo de volta!</Title>
+            <Title tag="h2">Bem vindo de volta!</Title>
             <Text
               variant="body3"
               styleSheet={{
@@ -110,6 +87,13 @@ export default function PaginaInicial() {
             </Text>
 
             <TextField
+              value={username}
+              onChange={function (event) {
+                // Onde está o valor?
+                const valor = event.target.value
+                // Trocar o valor da variável
+                setUsername(valor)
+              }}
               fullWidth
               textFieldColors={{
                 neutral: {
@@ -120,6 +104,7 @@ export default function PaginaInicial() {
                 }
               }}
             />
+
             <Button
               type="submit"
               label="Entrar"
