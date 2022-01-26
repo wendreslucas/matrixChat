@@ -30,7 +30,7 @@ function GlobalStyle() {
 }
 
 export default function MyApp({ Component, pageProps }) {
-  console.log('All pages')
+  console.log('Rodou Legal')
   return (
     <>
       <GlobalStyle />
