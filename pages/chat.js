@@ -3,10 +3,26 @@ import React from 'react'
 import appConfig from '../config.json'
 import MessageList from '../src/components/messageList'
 import Header from '../src/components/Header'
+import { createClient } from '@supabase/supabase-js'
+
+const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI4MzQyOSwiZXhwIjoxOTU4ODU5NDI5fQ.Q4AT5E1vMcs-w01gZ0jmA2m4iBUj3xNwwLzw_a9PdMc'
+const SUPABASE_URL = 'https://fcqmeylygdbsghoeqdbm.supabase.co'
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 export default function ChatPage() {
   const [message, setMessage] = React.useState('')
   const [messagesList, setMessagesList] = React.useState([])
+
+  React.useEffect(() => {
+    supabaseClient
+      .from('mensagens')
+      .select('*')
+      .order('id', { ascending: false })
+      .then(({ data }) => {
+        setMessagesList(data)
+      })
+  }, [])
 
   function handleChange(event) {
     setMessage(event.target.value)
@@ -15,18 +31,28 @@ export default function ChatPage() {
   function handleKeyPress(event, message) {
     if (event.key === 'Enter') {
       event.preventDefault()
+      if (!message) {
+        alert('Usuário Inválido')
+        return
+      }
       sendMessage(message)
     }
   }
 
-  function sendMessage(newMenssage) {
+  function sendMessage(newMessage) {
     const message = {
-      id: messagesList.length + 1,
-      from: 'WendresLucas',
-      texto: newMenssage
+      //id: messagesList.length + 1,
+      de: 'WendresLucas',
+      texto: newMessage
     }
 
-    setMessagesList([message, ...messagesList])
+    supabaseClient
+      .from('mensagens')
+      .insert([message])
+      .then(({ data }) => {
+        setMessagesList([data[0], ...messagesList])
+      })
+
     setMessage('')
   }
 

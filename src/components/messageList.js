@@ -46,9 +46,9 @@ export default function MessageList({ messages, setMessagesList }) {
                 display: 'inline-block',
                 marginRight: '8px'
               }}
-              src={`https://github.com/wendreslucas.png`}
+              src={`https://github.com/${message.de}.png`}
             />
-            <Text tag="strong">{message.from}</Text>
+            <Text tag="strong">{message.de}</Text>
             <Text
               styleSheet={{
                 fontSize: '10px',
