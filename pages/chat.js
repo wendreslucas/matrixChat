@@ -4,13 +4,26 @@ import appConfig from '../config.json'
 import MessageList from '../src/components/messageList'
 import Header from '../src/components/Header'
 import { createClient } from '@supabase/supabase-js'
+import { useRouter } from 'next/router'
+import { ButtonSendSticker } from '../src/components/ButtonSendSticker.js'
 
 const SUPABASE_ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MzI4MzQyOSwiZXhwIjoxOTU4ODU5NDI5fQ.Q4AT5E1vMcs-w01gZ0jmA2m4iBUj3xNwwLzw_a9PdMc'
 const SUPABASE_URL = 'https://fcqmeylygdbsghoeqdbm.supabase.co'
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
+function escutaMensagensEmTempoReal(adicionaMensagem) {
+  return supabaseClient
+    .from('mensagens')
+    .on('INSERT', respostaAutomatica => {
+      adicionaMensagem(respostaAutomatica.new)
+    })
+    .subscribe()
+}
+
 export default function ChatPage() {
+  const roteamento = useRouter()
+  const usuarioLogado = roteamento.query.username
   const [message, setMessage] = React.useState('')
   const [messagesList, setMessagesList] = React.useState([])
 
@@ -22,6 +35,14 @@ export default function ChatPage() {
       .then(({ data }) => {
         setMessagesList(data)
       })
+    escutaMensagensEmTempoReal(newMessage => {
+      console.log('Nova mensagem', newMessage)
+      console.log('Lista', messagesList)
+
+      setMessagesList(valorAtualDaLista => {
+        return [newMessage, ...valorAtualDaLista]
+      })
+    })
   }, [])
 
   function handleChange(event) {
@@ -42,7 +63,7 @@ export default function ChatPage() {
   function sendMessage(newMessage) {
     const message = {
       //id: messagesList.length + 1,
-      de: 'WendresLucas',
+      de: usuarioLogado,
       texto: newMessage
     }
 
@@ -50,7 +71,7 @@ export default function ChatPage() {
       .from('mensagens')
       .insert([message])
       .then(({ data }) => {
-        setMessagesList([data[0], ...messagesList])
+        console.log('Criando mensagem', data)
       })
 
     setMessage('')
@@ -137,6 +158,15 @@ export default function ChatPage() {
                 }
               }}
               onClick={() => sendMessage(message)}
+            />
+            <ButtonSendSticker
+              onStickerClick={sticker => {
+                console.log(
+                  '[USANDO COMPONENTE] Salva sticker no banco',
+                  sticker
+                )
+                sendMessage(':sticker:' + sticker)
+              }}
             />
           </Box>
         </Box>

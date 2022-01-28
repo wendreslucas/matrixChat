@@ -60,7 +60,12 @@ export default function MessageList({ messages, setMessagesList }) {
               {new Date().toLocaleDateString()}
             </Text>
           </Box>
-          {message.texto}
+
+          {message.texto.startsWith(':sticker:') ? (
+            <Image src={message.texto.replace(':sticker:', '')} />
+          ) : (
+            message.texto
+          )}
           <Button
             type="button"
             label="&times;"
